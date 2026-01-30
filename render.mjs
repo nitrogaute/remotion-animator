@@ -31,6 +31,7 @@ Usage:
 Compositions:
   ImageAnimator   Animate an image with various effects
   FuiClock        Futuristic UI clock interface
+  FuiPanorama     Wide panoramic FUI design with pan animation
 
 Options:
   --composition <name>  Composition to render (default: auto-detect)
@@ -40,6 +41,7 @@ Options:
   --duration <sec>      Duration in seconds (default: 5)
   --fps <number>        Frames per second (default: 30)
   --base-time <num>     Base time value for FuiClock (default: 1100)
+  --pan-speed <num>     Pan speed multiplier for FuiPanorama (default: 1)
   --help                Show this help message
 
 ImageAnimator Presets:
@@ -75,6 +77,7 @@ const preset = getArg('preset', 'ken-burns');
 const duration = parseFloat(getArg('duration', '5'));
 const fps = parseInt(getArg('fps', '30'), 10);
 const baseTime = parseInt(getArg('base-time', '1100'), 10);
+const panSpeed = parseFloat(getArg('pan-speed', '1'));
 
 // Determine which composition to use
 let selectedComposition = composition;
@@ -113,6 +116,10 @@ if (imageSrc) {
   inputProps = {
     baseTime: baseTime,
   };
+} else if (selectedComposition === 'FuiPanorama') {
+  inputProps = {
+    panSpeed: panSpeed,
+  };
 } else if (!selectedComposition) {
   console.error('Error: Either --composition or --image must be specified');
   console.log('Run with --help for usage information');
@@ -120,7 +127,7 @@ if (imageSrc) {
 }
 
 // Validate composition
-const validCompositions = ['ImageAnimator', 'FuiClock'];
+const validCompositions = ['ImageAnimator', 'FuiClock', 'FuiPanorama'];
 if (!validCompositions.includes(selectedComposition)) {
   console.error(`Error: Invalid composition "${selectedComposition}"`);
   console.log(`Valid compositions: ${validCompositions.join(', ')}`);
@@ -147,6 +154,8 @@ if (selectedComposition === 'ImageAnimator') {
   console.log(`🎨 Preset: ${preset}`);
 } else if (selectedComposition === 'FuiClock') {
   console.log(`⏰ Base Time: ${baseTime}`);
+} else if (selectedComposition === 'FuiPanorama') {
+  console.log(`🎬 Pan Speed: ${panSpeed}x`);
 }
 console.log(`⏱️  Duration: ${duration}s (${durationInFrames} frames @ ${fps}fps)`);
 console.log(`📁 Output: ${outputPath}`);
