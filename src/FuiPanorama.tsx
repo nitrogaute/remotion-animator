@@ -78,10 +78,11 @@ const ArcGauge: React.FC<{
   tickCount?: number;
   fillColor?: string;
   pulsePhase?: number;
+  rotation?: number; // Rotation angle in degrees
 }> = ({ 
   cx, cy, radius, startAngle, endAngle, progress, 
   strokeWidth = 3, showTicks = true, tickCount = 12, 
-  fillColor = ACCENT_COLOR, pulsePhase = 0 
+  fillColor = ACCENT_COLOR, pulsePhase = 0, rotation = 0 
 }) => {
   const polarToCartesian = (angle: number, r: number = radius) => {
     const rad = (angle - 90) * Math.PI / 180;
@@ -132,7 +133,7 @@ const ArcGauge: React.FC<{
   }
 
   return (
-    <g>
+    <g transform={`rotate(${rotation} ${cx} ${cy})`}>
       <path d={bgPath} fill="none" stroke={LINE_COLOR} strokeWidth={strokeWidth} opacity={0.15} />
       <path d={progressPath} fill="none" stroke={fillColor} strokeWidth={strokeWidth} opacity={0.9} 
         strokeLinecap="round" />
@@ -150,11 +151,12 @@ const CircleGauge: React.FC<{
   strokeWidth?: number;
   fillColor?: string;
   showInner?: boolean;
-}> = ({ cx, cy, radius, progress, strokeWidth = 2, fillColor = ACCENT_COLOR, showInner = true }) => {
+  rotation?: number; // Rotation angle in degrees
+}> = ({ cx, cy, radius, progress, strokeWidth = 2, fillColor = ACCENT_COLOR, showInner = true, rotation = 0 }) => {
   const circumference = 2 * Math.PI * radius;
   
   return (
-    <g>
+    <g transform={`rotate(${rotation} ${cx} ${cy})`}>
       <circle cx={cx} cy={cy} r={radius} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.15} />
       <circle 
         cx={cx} cy={cy} r={radius} 
@@ -341,6 +343,15 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
   
   // Pulse for subtle animations
   const pulse = 0.8 + 0.2 * Math.sin(frame * 0.1);
+  
+  // Rotation animations for circular elements (degrees)
+  // Different speeds and directions for visual interest
+  const rot1 = frame * 0.3;           // Slow clockwise
+  const rot2 = frame * -0.2;          // Slow counter-clockwise
+  const rot3 = frame * 0.5;           // Medium clockwise
+  const rot4 = frame * -0.4;          // Medium counter-clockwise
+  const rot5 = frame * 0.15;          // Very slow clockwise
+  const rot6 = frame * -0.6;          // Faster counter-clockwise
 
   return (
     <AbsoluteFill style={{ backgroundColor: BG_COLOR, overflow: 'hidden' }}>
@@ -371,12 +382,13 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
             strokeWidth={4}
             tickCount={18}
             pulsePhase={frame}
+            rotation={rot1}
           />
           
-          {/* Inner circle in the arc */}
+          {/* Inner circle in the arc - rotating dashed ring */}
           <circle cx={200} cy={300} r={80} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.1} />
           <circle cx={200} cy={300} r={60} fill="none" stroke={ACCENT_COLOR} strokeWidth={2} opacity={0.3} 
-            strokeDasharray="4 8" />
+            strokeDasharray="4 8" transform={`rotate(${rot2} 200 300)`} />
           
           {/* Technical labels around gauge */}
           <TechLabel text="SECTOR A" x={120} y={130} />
@@ -384,8 +396,8 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
           <TechLabel text="32.5 MHz" x={100} y={420} />
           
           {/* Small circle gauge - bottom left */}
-          <CircleGauge cx={120} cy={650} radius={50} progress={gauge4Progress} />
-          <CircleGauge cx={120} cy={650} radius={35} progress={1 - gauge4Progress} fillColor={LINE_COLOR} />
+          <CircleGauge cx={120} cy={650} radius={50} progress={gauge4Progress} rotation={rot3} />
+          <CircleGauge cx={120} cy={650} radius={35} progress={1 - gauge4Progress} fillColor={LINE_COLOR} rotation={rot4} />
           
           {/* Connecting line from left gauges */}
           <ConnectingLine x1={350} y1={300} x2={500} y2={400} curved />
@@ -406,6 +418,7 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
             strokeWidth={3}
             tickCount={15}
             pulsePhase={frame * 0.8}
+            rotation={rot2}
           />
           
           {/* Horizontal connecting lines */}
@@ -413,9 +426,10 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
           <ConnectingLine x1={850} y1={400} x2={1100} y2={300} />
           
           {/* Circle cluster */}
-          <CircleGauge cx={900} cy={550} radius={70} progress={gauge3Progress} strokeWidth={3} />
-          <CircleGauge cx={900} cy={550} radius={50} progress={gauge5Progress} fillColor="#4A90A4" />
-          <circle cx={900} cy={550} r={25} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.2} />
+          <CircleGauge cx={900} cy={550} radius={70} progress={gauge3Progress} strokeWidth={3} rotation={rot5} />
+          <CircleGauge cx={900} cy={550} radius={50} progress={gauge5Progress} fillColor="#4A90A4" rotation={rot6} />
+          <circle cx={900} cy={550} r={25} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.2} 
+            strokeDasharray="3 6" transform={`rotate(${rot3} 900 550)`} />
           <circle cx={900} cy={550} r={5} fill={ACCENT_COLOR} opacity={pulse} />
           
           {/* Small accent circles */}
@@ -432,7 +446,8 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
           
           {/* Main central gauge - largest element */}
           <g transform="translate(1400, 540)">
-            <circle r={200} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.1} />
+            <circle r={200} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.1} 
+              strokeDasharray="2 8" transform={`rotate(${rot5} 0 0)`} />
             <ArcGauge 
               cx={0} cy={0} radius={180} 
               startAngle={-135} endAngle={135} 
@@ -440,31 +455,36 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
               strokeWidth={5}
               tickCount={24}
               pulsePhase={frame}
+              rotation={rot1}
             />
-            <circle r={140} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.15} />
-            <CircleGauge cx={0} cy={0} radius={100} progress={gauge2Progress} strokeWidth={2} />
-            <circle r={60} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.2} />
+            <circle r={140} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.15} 
+              strokeDasharray="4 4" transform={`rotate(${rot4} 0 0)`} />
+            <CircleGauge cx={0} cy={0} radius={100} progress={gauge2Progress} strokeWidth={2} rotation={rot2} />
+            <circle r={60} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.2} 
+              strokeDasharray="6 3" transform={`rotate(${rot3} 0 0)`} />
             <circle r={8} fill={ACCENT_COLOR} opacity={pulse} />
           </g>
           
-          {/* Radiating lines from center */}
-          {[...Array(8)].map((_, i) => {
-            const angle = (i * 45 - 90) * Math.PI / 180;
-            const innerR = 220;
-            const outerR = 280 + (i % 2) * 30;
-            return (
-              <line
-                key={i}
-                x1={1400 + Math.cos(angle) * innerR}
-                y1={540 + Math.sin(angle) * innerR}
-                x2={1400 + Math.cos(angle) * outerR}
-                y2={540 + Math.sin(angle) * outerR}
-                stroke={i % 2 === 0 ? ACCENT_COLOR : LINE_COLOR}
-                strokeWidth={i % 2 === 0 ? 2 : 1}
-                opacity={i % 2 === 0 ? 0.6 : 0.3}
-              />
-            );
-          })}
+          {/* Radiating lines from center - rotating */}
+          <g transform={`rotate(${rot5} 1400 540)`}>
+            {[...Array(8)].map((_, i) => {
+              const angle = (i * 45 - 90) * Math.PI / 180;
+              const innerR = 220;
+              const outerR = 280 + (i % 2) * 30;
+              return (
+                <line
+                  key={i}
+                  x1={1400 + Math.cos(angle) * innerR}
+                  y1={540 + Math.sin(angle) * innerR}
+                  x2={1400 + Math.cos(angle) * outerR}
+                  y2={540 + Math.sin(angle) * outerR}
+                  stroke={i % 2 === 0 ? ACCENT_COLOR : LINE_COLOR}
+                  strokeWidth={i % 2 === 0 ? 2 : 1}
+                  opacity={i % 2 === 0 ? 0.6 : 0.3}
+                />
+              );
+            })}
+          </g>
           
           <TechLabel text="CENTRAL HUB" x={1340} y={280} />
           <TechLabel text="STATUS: ONLINE" x={1330} y={820} blink frame={frame} />
@@ -479,6 +499,7 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
             strokeWidth={4}
             tickCount={16}
             pulsePhase={frame * 1.2}
+            rotation={rot4}
           />
           
           {/* Connecting lines from center */}
@@ -486,8 +507,8 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
           <ConnectingLine x1={1600} y1={630} x2={1950} y2={700} curved />
           
           {/* Dual circle gauges */}
-          <CircleGauge cx={2000} cy={700} radius={60} progress={gauge4Progress} />
-          <CircleGauge cx={2150} cy={750} radius={45} progress={gauge5Progress} />
+          <CircleGauge cx={2000} cy={700} radius={60} progress={gauge4Progress} rotation={rot3} />
+          <CircleGauge cx={2150} cy={750} radius={45} progress={gauge5Progress} rotation={rot6} />
           
           {/* Connection between them */}
           <line x1={2060} y1={700} x2={2105} y2={750} stroke={LINE_COLOR} strokeWidth={1} opacity={0.4} />
@@ -511,19 +532,21 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
             strokeWidth={4}
             tickCount={20}
             pulsePhase={frame * 0.9}
+            rotation={rot2}
           />
           
-          {/* Inner details */}
-          <circle cx={2700} cy={400} r={100} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.15} />
+          {/* Inner details - rotating rings */}
+          <circle cx={2700} cy={400} r={100} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.15}
+            strokeDasharray="4 8" transform={`rotate(${rot5} 2700 400)`} />
           <circle cx={2700} cy={400} r={70} fill="none" stroke={ACCENT_COLOR} strokeWidth={2} opacity={0.4}
-            strokeDasharray="10 5" />
+            strokeDasharray="10 5" transform={`rotate(${rot6} 2700 400)`} />
           
           {/* Connecting line */}
           <ConnectingLine x1={2400} y1={550} x2={2600} y2={450} accent />
           
           {/* Small satellite gauges */}
-          <CircleGauge cx={2900} cy={250} radius={40} progress={gauge4Progress} />
-          <CircleGauge cx={2950} cy={600} radius={55} progress={gauge1Progress} />
+          <CircleGauge cx={2900} cy={250} radius={40} progress={gauge4Progress} rotation={rot1} />
+          <CircleGauge cx={2950} cy={600} radius={55} progress={gauge1Progress} rotation={rot4} />
           
           {/* Final large gauge */}
           <g transform="translate(3400, 500)">
@@ -534,10 +557,13 @@ export const FuiPanorama: React.FC<FuiPanoramaProps> = ({ panSpeed = 1 }) => {
               strokeWidth={4}
               tickCount={20}
               pulsePhase={frame}
+              rotation={rot3}
             />
-            <circle r={100} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.1} />
-            <CircleGauge cx={0} cy={0} radius={80} progress={1 - gauge2Progress} fillColor="#4A90A4" />
-            <circle r={50} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.2} />
+            <circle r={100} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.1} 
+              strokeDasharray="3 6" transform={`rotate(${rot5} 0 0)`} />
+            <CircleGauge cx={0} cy={0} radius={80} progress={1 - gauge2Progress} fillColor="#4A90A4" rotation={rot4} />
+            <circle r={50} fill="none" stroke={LINE_COLOR} strokeWidth={1} opacity={0.2} 
+              strokeDasharray="5 5" transform={`rotate(${rot6} 0 0)`} />
             <circle r={6} fill={ACCENT_COLOR} opacity={pulse} />
           </g>
           
