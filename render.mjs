@@ -118,8 +118,7 @@ const renderCmd = [
   'ImageAnimator',
   resolve(process.cwd(), outputPath),
   `--props='${inputProps}'`,
-  `--frames=0-${durationInFrames - 1}`,
-  `--fps=${fps}`,
+  `--duration-in-frames=${durationInFrames}`,
 ].join(' ');
 
 try {
