@@ -193,6 +193,48 @@ Typical render time: ~10-30 seconds for a 5-second video.
 - React 19
 - TailwindCSS 4
 
+## AI Development Setup
+
+This project includes AI assistant configuration for enhanced development experience.
+
+### MCP (Model Context Protocol)
+
+The `.mcp.json` file configures the Remotion MCP server, which provides AI assistants with Remotion documentation and best practices.
+
+**Setup in Cursor/Claude:**
+1. The `.mcp.json` is automatically detected
+2. Enables the `@remotion/mcp` server for Remotion-specific assistance
+
+```json
+{
+  "mcpServers": {
+    "remotion-documentation": {
+      "command": "npx",
+      "args": ["@remotion/mcp@latest"]
+    }
+  }
+}
+```
+
+### Agent Skills
+
+The `.agents/skills/` folder contains Remotion-specific knowledge that AI assistants can reference:
+
+- **remotion-best-practices** - Comprehensive Remotion patterns including:
+  - Animations, timing, and easing
+  - Audio/video handling
+  - 3D content with Three.js
+  - Text animations and captions
+  - Charts and data visualization
+  - And more...
+
+**Usage:** Reference `@.agents/skills/remotion-best-practices/SKILL.md` in your AI assistant to load Remotion expertise.
+
+### Excluded Files
+
+The following AI tool directories are excluded from git (user-specific):
+- `.agent/`, `.claude/`, `.codex/`, `.cursor/`, `.gemini/`
+
 ## License
 
 MIT

@@ -3,6 +3,7 @@ import { Composition } from 'remotion';
 import { ImageAnimator } from './ImageAnimator';
 import { FuiClock } from './FuiClock';
 import { FuiPanorama } from './FuiPanorama';
+import { KnowledgeGraph } from './KnowledgeGraph';
 import { AnimationPreset } from './types';
 
 export const RemotionRoot: React.FC = () => {
@@ -46,6 +47,21 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         defaultProps={{
           panSpeed: 1,
+        }}
+      />
+      <Composition
+        id="KnowledgeGraph"
+        component={KnowledgeGraph}
+        durationInFrames={2100}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          nodeCount: 250,
+          connectionDistance: 300,
+          nodeSize: 2,
+          accentColor: '#4169E1',
+          secondaryColor: '#1E90FF',
         }}
       />
     </>

@@ -10,3 +10,11 @@ output.mp4
 
 # Test files
 test/*.mp4
+
+# User-specific AI tool config (not shared)
+.agent/
+.claude/
+.codex/
+.cursor/
+.gemini/
+nul
